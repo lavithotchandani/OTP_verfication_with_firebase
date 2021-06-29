@@ -175,15 +175,31 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/verify_btn"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="verify"
-            android:layout_margin="40dp"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            android:backgroundTint="@color/orange"/>/>
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/verify_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="verify"
+                android:layout_margin="40dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:backgroundTint="@color/orange"/>
+
+            <ProgressBar
+                android:id="@+id/progressbar2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                />
+
+        </FrameLayout>
+
+
 
     </LinearLayout>
 

@@ -2,6 +2,8 @@ package com.example.otp_verfication_with_firebase;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
@@ -10,6 +12,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
+
+import java.util.concurrent.TimeUnit;
+
 public class get_number extends AppCompatActivity {
 
     @Override
@@ -17,12 +25,12 @@ public class get_number extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_number);
 
-        final Button btn = findViewById(R.id.get_otp_btn);
+        final Button get_otp_btn = findViewById(R.id.get_otp_btn);
         final EditText input_number = findViewById(R.id.input_number);
-        final ProgressBar progressBar = findViewById(R.id.progressbar);
+        final ProgressBar progressBar = findViewById(R.id.progressbar1);
 
 
-        btn.setOnClickListener(new View.OnClickListener() {
+        get_otp_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -30,9 +38,34 @@ public class get_number extends AppCompatActivity {
                     Toast.makeText(get_number.this, "Please enter a mobile number", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Intent intent = new Intent(getApplicationContext(), verify_otp.class);
-                intent.putExtra("mobile", input_number.getText().toString());
-                startActivity(intent);
+                progressBar.setVisibility(View.GONE);
+                get_otp_btn.setVisibility(View.VISIBLE);
+
+                PhoneAuthProvider.getInstance().verifyPhoneNumber("+91" + input_number.getText().toString(), 60, TimeUnit.SECONDS, get_number.this,
+                        new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                            @Override
+                            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                                progressBar.setVisibility(View.VISIBLE);
+                                get_otp_btn.setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onVerificationFailed(@NonNull FirebaseException e) {
+                                progressBar.setVisibility(View.VISIBLE);
+                                get_otp_btn.setVisibility(View.INVISIBLE);
+                                Toast.makeText(get_number.this, e.getMessage() , Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                                progressBar.setVisibility(View.VISIBLE);
+                                get_otp_btn.setVisibility(View.INVISIBLE);
+                                Intent intent = new Intent(getApplicationContext(), verify_otp.class);
+                                intent.putExtra("mobile", input_number.getText().toString());
+                                intent.putExtra("verificationId", verificationId);
+                                startActivity(intent);
+                            }
+                        });
 
             }
         });
